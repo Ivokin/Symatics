@@ -1,0 +1,305 @@
+﻿<Infrastructure:BaseDataWindow x:Class="TM.WPF.Views.ManageOwnersView"
+                               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                               xmlns:Infrastructure="clr-namespace:TM.WPF.Infrastructure"
+                               xmlns:SearchPanel="clr-namespace:Telerik.Windows.Controls.GridView.SearchPanel;assembly=Telerik.Windows.Controls.GridView"
+                               xmlns:cal="http://www.caliburnproject.org"
+                               xmlns:converter="clr-namespace:TM.WPF.Converters"
+                               xmlns:focusHelper="clr-namespace:TM.WPF.Helpers"
+                               xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                               xmlns:resource="clr-namespace:TM.WPF.ResourcesFiles"
+                               xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+                               xmlns:userControl="clr-namespace:TM.WPF.UserControls"
+                               Width="800"
+                               Height="600"
+                               MinWidth="800"
+                               MinHeight="600"
+                               WindowStartupLocation="CenterOwner">
+    <Infrastructure:BaseDataWindow.Resources>
+        <converter:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converter:StringToVisibilityConverter x:Key="StringToVisibilityConverter"
+                                               False="Collapsed"
+                                               True="Visible" />
+        <ControlTemplate x:Key="GridViewSearchPanelTemplate" TargetType="telerik:GridViewSearchPanel">
+            <Grid UseLayoutRounding="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="2"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{StaticResource GridView_SearchPanelInnerBorder}"
+                            BorderThickness="1" />
+                </Border>
+                <Grid Grid.Column="0" Margin="5,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="550" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Margin="0,0,5,0" VerticalAlignment="Center">
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ClearButton" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Visible</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Mouse.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ClearButton" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+                        <telerik:RadWatermarkTextBox x:Name="PART_SearchAsYouTypeTextBox"
+                                                     Height="25"                                              
+                                                     Margin="5,2,0,0"
+                                                     Padding="2"
+                                                     VerticalContentAlignment="Center"
+                                                     focusHelper:FocusHelper.EnsureFocus="{Binding IsBusyIndicationVisible, ElementName=IndicatorIsBusy}"
+                                                     telerik:TextBoxBehavior.UpdateTextOnEnter="True"
+                                                     Loaded="TextSearchLoaded"
+                                                     Text="{Binding SearchText, Mode=TwoWay}"
+                                                     WatermarkContent="{x:Static resource:Resources.SearchFormView}">
+                            <TextBox.IsTabStop>
+                                <Binding Path="IsTabStop" RelativeSource="{RelativeSource TemplatedParent}" />
+                            </TextBox.IsTabStop>
+                        </telerik:RadWatermarkTextBox>
+                        <telerik:RadButton x:Name="ClearButton"
+                                           Command="SearchPanel:GridViewSearchPanelCommands.ClearSearchValue"
+                                           IsTabStop="False"
+                                           Visibility="Collapsed">
+                            <telerik:RadButton.Style>
+                                <Style TargetType="{x:Type telerik:RadButton}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type telerik:RadButton}">
+                                                <Border x:Name="ButtonBorder"
+                                                        Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <Path Width="8"
+                                                          Height="8"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          Data="M1,0L4,3 7,0 8,1 5,4 8,7 7,8 4,5 1,8 0,7 3,4 0,1z"
+                                                          Fill="{TemplateBinding Foreground}"
+                                                          Stretch="Fill"
+                                                          Stroke="{x:Null}"
+                                                          StrokeThickness="0" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Background" Value="#01FFFFFF" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="Width" Value="20" />
+                                    <Setter Property="Height" Value="20" />
+                                    <Setter Property="HorizontalAlignment" Value="Right" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="Foreground" Value="{StaticResource RedColorDefault}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource RedColorDefault}" />
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource RedColorDefault}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </telerik:RadButton.Style>
+                        </telerik:RadButton>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+        <Style BasedOn="{StaticResource GridViewSearchPanelStyle}" TargetType="telerik:GridViewSearchPanel">
+            <Setter Property="Template" Value="{StaticResource GridViewSearchPanelTemplate}" />
+        </Style>
+    </Infrastructure:BaseDataWindow.Resources>
+    <telerik:RadWindow.Header>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Margin="0,0,8,0" Text="{x:Static resource:Resources.ManageBanks}" />
+            <StackPanel Orientation="Horizontal" Visibility="{Binding CountOfOwners, Converter={StaticResource StringToVisibilityConverter}}">
+                <TextBlock Text="[" />
+                <TextBlock x:Name="CurrentCountAfterFilter" />
+                <TextBlock Text="{Binding CountOfOwners, Mode=OneWay}" />
+                <TextBlock Text="]" />
+            </StackPanel>
+        </StackPanel>
+    </telerik:RadWindow.Header>
+    <telerik:RadBusyIndicator x:Name="IndicatorIsBusy"
+                              IsBusy="{Binding BusyIndicator.IsBusy}"
+                              Style="{StaticResource RadBusyIndicatorCustomStyle}">
+        <Grid Background="LightGray">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="65" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="420" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="130" />
+            </Grid.ColumnDefinitions>
+            <telerik:RadGridView x:Name="GrdBanks"
+                                 Grid.Row="0"
+                                 Grid.RowSpan="2"
+                                 Grid.ColumnSpan="3"
+                                 AutoGenerateColumns="False"
+                                 CurrentCellChanged="GrdBanksCurrentCellChanged"
+                                 SelectionChanging="GrdBanksSelectionChanging"
+                                 SelectionChanged="GrdBanksSelectionChanged"
+                                 EnableLostFocusSelectedState="False"
+                                 IsReadOnly="{Binding SelectedOwner.Standard}"
+                                 IsSearchingDeferred="False"
+                                 IsSynchronizedWithCurrentItem="True"
+                                 ItemsSource="{Binding Owners, Mode=TwoWay}"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 SelectedItem="{Binding SelectedOwner, Mode=TwoWay}"
+                                 SelectionMode="Single"
+                                 SelectionUnit="FullRow"
+                                 ShowGroupPanel="True"
+                                 ShowSearchPanel="True">
+                <i:Interaction.Triggers>
+                    <Infrastructure:InputBindingTrigger>
+                        <Infrastructure:InputBindingTrigger.InputBinding>
+                            <KeyBinding Key="Enter" />
+                        </Infrastructure:InputBindingTrigger.InputBinding>
+                        <cal:ActionMessage MethodName="BtnEnter" />
+                    </Infrastructure:InputBindingTrigger>
+                    <Infrastructure:InputBindingTrigger>
+                        <Infrastructure:InputBindingTrigger.InputBinding>
+                            <KeyBinding Key="C" Modifiers="Ctrl" />
+                        </Infrastructure:InputBindingTrigger.InputBinding>
+                        <cal:ActionMessage MethodName="CopyContextOfCell" />
+                    </Infrastructure:InputBindingTrigger>
+                </i:Interaction.Triggers>
+                <telerik:RadGridView.SortDescriptors>
+                    <telerik:SortDescriptor Member="OwnerCode" SortDirection="Ascending" />
+                </telerik:RadGridView.SortDescriptors>
+                <telerik:RadGridView.Columns>
+                    <telerik:GridViewDataColumn DataMemberBinding="{Binding OwnerCode}"
+                                                Header="{x:Static resource:Resources.OwnerCode}"
+                                                IsReadOnly="True" />
+                    <telerik:GridViewDataColumn DataMemberBinding="{Binding SystemCode}"
+                                                Header="{x:Static resource:Resources.SystemCode}"
+                                                IsReadOnly="True" />
+                    <telerik:GridViewDataColumn DataMemberBinding="{Binding Name1}"
+                                                Header="{x:Static resource:Resources.BankName1}"
+                                                IsReadOnly="True" />
+                    <telerik:GridViewDataColumn DataMemberBinding="{Binding Name2}"
+                                                Header="{x:Static resource:Resources.BankName2}"                                 
+                                                IsReadOnly="True" />
+                    <telerik:GridViewDataColumn DataMemberBinding="{Binding OwnerCodeOfParent}"
+                                                Header="!Parent Code!"                          
+                                                IsReadOnly="True" />
+                </telerik:RadGridView.Columns>
+            </telerik:RadGridView>
+            <telerik:RadTabControl x:Name="Items"
+                                   Grid.Row="2"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   ItemContainerStyle="{StaticResource RadTabItemStyle}" MinWidth="500">
+                <telerik:RadTabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Height="20"
+                                   MinWidth="100"
+                                   FontSize="12"
+                                   FontWeight="Bold"
+                                   Text="{Binding DisplayName}"
+                                   TextAlignment="Center" />
+                    </DataTemplate>
+                </telerik:RadTabControl.ItemTemplate>
+            </telerik:RadTabControl>
+            <Grid Grid.Column="1"
+                  Width="220"
+                  Height="25"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="0"
+                  Margin="0,7,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <telerik:RadButton x:Name="BtnCreate"      
+                                   Margin="5,0,1,0"
+                                   IsEnabled="{Binding SelectedOwner.IsDirty,Converter={StaticResource InverseBooleanConverter}}"
+                                   Style="{StaticResource radButtonThirthStyle}"
+                                   Content="{x:Static resource:Resources.BtnCreateTemplate}" >
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="{x:Static resource:Resources.Save}" />
+                    </ToolTipService.ToolTip>
+                </telerik:RadButton>
+                <telerik:RadButton x:Name="BtnDelete"
+                                   Grid.Column="1"
+                                   Margin="1,0,5,0"
+                                   Style="{StaticResource radButtonThirthStyle}"
+                                   Content="{x:Static resource:Resources.Delete}" >
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="!Revert!" />
+                    </ToolTipService.ToolTip>
+                </telerik:RadButton>
+            </Grid>
+            <StackPanel Grid.Column="2"
+                        Grid.RowSpan="2"
+                        Grid.Row="1"
+                        Margin="0,0,10,5"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+                <telerik:RadButton x:Name="BtnSave"
+                                   Margin="0,0,0,5"
+                                   IsEnabled="{Binding SelectedOwner.IsValid}"
+                                   Style="{StaticResource radButtonThirthStyle}"
+                                   Content="{x:Static resource:Resources.btnSave}" >
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="{x:Static resource:Resources.Save}" />
+                    </ToolTipService.ToolTip>
+                </telerik:RadButton>
+                <telerik:RadButton x:Name="BtnRevert"
+                                   HorizontalAlignment="Right"
+                                   IsEnabled="{Binding SelectedOwner.IsDirty}"
+                                   Style="{StaticResource radButtonThirthStyle}"
+                                   Content="!Revert!" >
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="!Revert!" />
+                    </ToolTipService.ToolTip>
+                </telerik:RadButton>
+            </StackPanel>
+            <userControl:StatusBar Grid.Row="3"
+                                   Grid.ColumnSpan="3"
+                                   StatusBarData="{Binding StatusBarData}" />
+            <Grid.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsGridFocus}" Value="True">
+                            <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=Owners}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+        </Grid>
+    </telerik:RadBusyIndicator>
+</Infrastructure:BaseDataWindow>

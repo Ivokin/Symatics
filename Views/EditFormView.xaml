@@ -1,0 +1,247 @@
+﻿<telerik:RadWindow x:Class="TM.WPF.Views.EditFormView"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:Behaviour="clr-namespace:TM.WPF.Behaviour"
+                   xmlns:converter="clr-namespace:TM.WPF.Converters"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:resource="clr-namespace:TM.WPF.ResourcesFiles"
+                   xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+                   xmlns:constants="clr-namespace:TM.Shared.Constants;assembly=TM.Shared"
+                   Width="501.367"
+                   Height="261.567"
+                   Background="LightGray"
+                   Header="{Binding HeaderName}"
+                   ResizeMode="NoResize"
+                   WindowStartupLocation="CenterScreen"
+                   mc:Ignorable="d">
+    <telerik:RadWindow.Resources>
+        <converter:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </telerik:RadWindow.Resources>
+    <Grid Height="215"
+          Margin="0,2,0,0"
+          VerticalAlignment="Top">
+        <Grid.Style>
+            <Style>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsFocus}" Value="True">
+                        <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=FormNr}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBox Name="FormNr"
+                     Grid.Row="0"
+                     Grid.Column="0"
+                     Width="95"
+                     Height="20"
+                     Margin="5,2,0,2"
+                     HorizontalAlignment="Left"
+                     FocusManager.FocusedElement="{Binding IsFocus}"
+                     MaxLength="{x:Static constants:NumericConstants.FormNrLength}"
+                     Text="{Binding EditedForm.FormNr, UpdateSourceTrigger=PropertyChanged}" />
+            <telerik:RadComboBox
+                Grid.Row="0"
+                Grid.Column="1"
+                Width="95"
+                Height="22"
+                Margin="5,2,40,2"
+                HorizontalAlignment="Left"
+                DisplayMemberPath="FormType"
+                IsEnabled="{Binding EditedForm.IsNew, UpdateSourceTrigger=PropertyChanged}"
+                ItemsSource="{Binding EditedForm.KeyFormTypes}"
+                SelectedItem="{Binding EditedForm.SelectedKeyFormType, Mode=TwoWay}" />
+        </Grid>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.FormNr}" />
+        <TextBox Grid.Row="1"
+                 Grid.Column="1"
+                 Width="95"
+                 Height="20"
+                 Margin="{StaticResource MarginEditForm}"
+                 HorizontalAlignment="Left"
+                 Focusable="False"
+                 IsReadOnly="True"
+                 Text="{Binding EditedForm.OwnerChooseModel.OwnerCode}"
+                 TextWrapping="Wrap" />
+        <TextBox Grid.Row="1"
+                 Grid.Column="1"
+                 Width="258"
+                 Height="20"
+                 Margin="0,4,37,4"
+                 HorizontalAlignment="Right"
+                 Focusable="False"
+                 IsReadOnly="True"
+                 Text="{Binding EditedForm.OwnerChooseModel.Name1}"
+                 TextWrapping="Wrap" />
+        <TextBlock Grid.Row="1"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.Owner}" />
+        <telerik:RadButton x:Name="BtnChooseBank"
+                           Grid.Row="1"
+                           Grid.Column="1"
+                           Width="30"
+                           Height="22"
+                           Margin="{StaticResource MarginEditForm}"
+                           HorizontalAlignment="Right"
+                           Content="..." />
+        <TextBlock Grid.Row="2"
+                   Grid.Column="0"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.Description}" />
+        <TextBox Grid.Row="2"
+                 Grid.Column="1"
+                 Height="20"
+                 Margin="{StaticResource MarginEditForm}"
+                 AcceptsReturn="True"
+                 MaxLength="{x:Static constants:NumericConstants.FormDescriptionMaxLength}"
+                 PreviewKeyDown="DescriptionPreviewKeyDown"
+                 Text="{Binding EditedForm.Description, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBlock Grid.Row="3"
+                   Grid.Column="0"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.Length}" />
+        <telerik:RadNumericUpDown Grid.Row="3"
+                                  Grid.Column="1"
+                                  Width="95"
+                                  Height="20"
+                                  Margin="{StaticResource MarginEditForm}"
+                                  HorizontalAlignment="Left"
+                                  CustomUnit="mm"
+                                  IsEnabled="{Binding EditedForm.IsNew, Converter={StaticResource InverseBooleanConverter}}"
+                                  Maximum="9999"
+                                  Minimum="0"
+                                  NumberDecimalDigits="0"
+                                  UpdateValueEvent="PropertyChanged"
+                                  ValueFormat="Numeric"
+                                  Value="{Binding EditedForm.Length, UpdateSourceTrigger=PropertyChanged}">
+            <interactivity:Interaction.Behaviors>
+                <Behaviour:RadNumberUpDownBehavior MaxNumber="9999" />
+            </interactivity:Interaction.Behaviors>
+        </telerik:RadNumericUpDown>
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.Width}" />
+        <telerik:RadNumericUpDown Grid.Row="4"
+                                  Grid.Column="1"
+                                  Width="95"
+                                  Height="20"
+                                  Margin="{StaticResource MarginEditForm}"
+                                  HorizontalAlignment="Left"
+                                  CustomUnit="mm"
+                                  IsEnabled="{Binding EditedForm.IsNew, Converter={StaticResource InverseBooleanConverter}}"
+                                  Maximum="9999"
+                                  NumberDecimalDigits="0"
+                                  SmallChange="1"
+                                  UpdateValueEvent="PropertyChanged"
+                                  ValueFormat="Numeric"
+                                  Value="{Binding EditedForm.Width, UpdateSourceTrigger=PropertyChanged}">
+            <interactivity:Interaction.Behaviors>
+                <Behaviour:RadNumberUpDownBehavior MaxNumber="9999" />
+            </interactivity:Interaction.Behaviors>
+        </telerik:RadNumericUpDown>
+        <TextBlock Grid.Row="5"
+                   Grid.Column="0"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.Weight}" />
+        <telerik:RadNumericUpDown Grid.Row="5"
+                                  Grid.Column="1"
+                                  Width="95"
+                                  Height="20"
+                                  Margin="{StaticResource MarginEditForm}"
+                                  HorizontalAlignment="Left"
+                                  CustomUnit="g"
+                                  HideTrailingZeros="False"
+                                  IsEnabled="{Binding EditedForm.IsNew, Converter={StaticResource InverseBooleanConverter}}"
+                                  Maximum="9999.9"
+                                  NumberDecimalDigits="1"
+                                  SmallChange="1"
+                                  UpdateValueEvent="PropertyChanged"
+                                  ValueFormat="Numeric"
+                                  Value="{Binding EditedForm.Weight, UpdateSourceTrigger=PropertyChanged}">
+            <interactivity:Interaction.Behaviors>
+                <Behaviour:RadNumberUpDownBehavior MaxNumber="9999.9" />
+            </interactivity:Interaction.Behaviors>
+        </telerik:RadNumericUpDown>
+        <TextBlock Grid.Row="6"
+                   Grid.Column="0"
+                   Margin="{StaticResource MarginEditForm}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{x:Static resource:Resources.Thickness}" />
+        <telerik:RadNumericUpDown Grid.Row="6"
+                                  Grid.Column="1"
+                                  Width="95"
+                                  Height="20"
+                                  Margin="{StaticResource MarginEditForm}"
+                                  HorizontalAlignment="Left"
+                                  CustomUnit="mm"
+                                  HideTrailingZeros="False"
+                                  IsEnabled="{Binding EditedForm.IsNew, Converter={StaticResource InverseBooleanConverter}}"
+                                  Maximum="999.9"
+                                  NumberDecimalDigits="1"
+                                  UpdateValueEvent="PropertyChanged"
+                                  ValueFormat="Numeric"
+                                  Value="{Binding EditedForm.Thickness, UpdateSourceTrigger=PropertyChanged}">
+            <interactivity:Interaction.Behaviors>
+                <Behaviour:RadNumberUpDownBehavior MaxNumber="999.9" />
+            </interactivity:Interaction.Behaviors>
+        </telerik:RadNumericUpDown>
+        <StackPanel Grid.Row="6"
+                    Grid.Column="1"
+                    Width="165"
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+            <telerik:RadButton x:Name="BtnSaveForm"
+                               Width="80"
+                               Margin="0,2,0,2"
+                               HorizontalAlignment="Right"
+                               Content="{x:Static resource:Resources.Save}"
+                               IsEnabled="{Binding EditedForm.IsValid, UpdateSourceTrigger=PropertyChanged}"
+                               Style="{StaticResource primaryButtonStyle}" />
+            <telerik:RadButton x:Name="BtnCancel"
+                               Width="80"
+                               Margin="5,2,0,2"
+                               HorizontalAlignment="Right"
+                               Content="{x:Static resource:Resources.btnCancel}" />
+        </StackPanel>
+    </Grid>
+</telerik:RadWindow>
